@@ -1,0 +1,8 @@
+aio_pika
+asyncio
+twitter
+pymongo
+motor
+textblob
+emoji
+tweepy

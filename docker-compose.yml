@@ -1,0 +1,109 @@
+version: "3.7"
+
+x-common-variables: &common-variables
+  TWITTER_API_KEY: EOXlEA6Fv1siGvOTBGOLMHc6D
+  TWITTER_API_SECRET: 5KRYslxRWEVQEIIPOkDXLorZwn75kHq9Wb4gag7Q3UQujjvtNo
+  TWITTER_ACCESS_TOKEN: 18762993-KFVaSHFfRAC60ZxbvKJzgMPq7nca3pkTpPmhRBrnU
+  TWITTER_TOKEN_SECRET: brkWDaksefuFrF0u3FuwHfmc8lZR4CofvjAeKDimDvCBT
+  RABBIT_USERNAME: admin
+  RABBIT_PASSWORD: 123123
+  RABBIT_URL: rabbit
+  MONGODB_USERNAME: dbuser
+  MONGODB_PASSWORD: dbpassword
+  MONGODB_URL: mongodb:27017
+  MONGODB_DBNAME: tw_analyzer
+  SEED_KEYWORDS: apple,microsoft
+
+services:
+
+  tw_datalayer:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: twanalyzer:latest
+    container_name: tw_datalayer
+    command: python datalayer.py
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 15s
+        max_attempts: 3
+        window: 10s
+    environment:
+      <<: *common-variables
+    depends_on:
+      - rabbit
+      - mongodb
+    networks:
+      - sky-net
+
+  tw_analyzer:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: twanalyzer:latest
+    container_name: tw_analyzer
+    command: python analyzer.py
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 15s
+        max_attempts: 3
+        window: 10s
+    environment:
+      <<: *common-variables
+    depends_on:
+      - tw_datalayer
+    networks:
+      - sky-net
+
+  tw_crawler:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: twanalyzer:latest
+    container_name: tw_crawler
+    command: python crawler.py
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 15s
+        max_attempts: 3
+        window: 10s
+    environment:
+      <<: *common-variables
+    depends_on:
+      - tw_analyzer
+    networks:
+      - sky-net
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=dbuser
+      - MONGO_INITDB_ROOT_PASSWORD=dbpassword
+    ports:
+      - 27017:27017
+    networks:
+      - sky-net
+  
+  rabbit:
+    image: rabbitmq:3.8.4-management
+    container_name: rabbit
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=123123
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 15675:15675
+      - 1883:1883
+      - 25672:25672
+    networks:
+      - sky-net
+
+
+networks:
+  sky-net:
+    external: true
