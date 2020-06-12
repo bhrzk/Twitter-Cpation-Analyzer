@@ -23,37 +23,27 @@ This module follows three steps:
 
 ## Configs
 
-Please be careful to take a look at the `config.py` file before starting. There are a few things you need to pay attention to. 
+You can change the configs via `docker-compose.yml` or if you want to run them directly just take a look at `config.py`.
 
-```python
-
+```YAML
     # Twitter API access configuration
-
-    TWITTER_API_KEY = os.environ.get("TWITTER_API_KEY", "")
-    TWITTER_API_SECRET = os.environ.get("TWITTER_API_SECRET", "")
-    TWITTER_ACCESS_TOKEN = os.environ.get("TWITTER_ACCESS_TOKEN", "")
-    TWITTER_TOKEN_SECRET = os.environ.get("TWITTER_TOKEN_SECRET", "")
-
-    
+    TWITTER_API_KEY: 
+    TWITTER_API_SECRET: 
+    TWITTER_ACCESS_TOKEN: 
+    TWITTER_TOKEN_SECRET: 
     # RabbitMQ Configuration
-    # You can leave it alone but be noticed you need to set the same value to docker-compose.yml as well.
-    
-    RABBIT_USERNAME = os.environ.get("RABBIT_USERNAME", "admin")
-    RABBIT_PASSWORD = os.environ.get("RABBIT_PASSWORD", "123123")
-    RABBIT_URL = os.environ.get("RABBIT_URL", "localhost")
-
+    # You can leave it alone but be noticed you need to set the same value to the rabbit service as well.
+    RABBIT_USERNAME: admin
+    RABBIT_PASSWORD: 123123
+    RABBIT_URL: rabbit
     # MongoDB Configuration
-    # You can leave it alone but be noticed you need to set the same value to docker-compose.yml as well.
-
-    MONGODB_USERNAME = os.environ.get("MONGODB_USERNAME", "dbuser")
-    MONGODB_PASSWORD = os.environ.get("MONGODB_PASSWORD", "dbpassword")
-    MONGODB_URL = os.environ.get("MONGODB_URL", "localhost:27017")
-    MONGODB_DBNAME = os.environ.get("MONGODB_DBNAME", "tw_analyzer")
-
-    # These are the keywords that the module will look for on Twitter at starting. It's for the best to not exceed 10 items. 
-
-    SEED_KEYWORDS = ["puma", "adidas", "zara"]
-
+    # You can leave it alone but be noticed you need to set the same value to mongodb service as well.
+    MONGODB_USERNAME: dbuser
+    MONGODB_PASSWORD: dbpassword
+    MONGODB_URL: mongodb:27017
+    MONGODB_DBNAME: tw_analyzer
+    # These are the comma-separated keywords that the module will look for on Twitter at starting. It's for the best to not exceed 10 items. 
+    SEED_KEYWORDS: apple,microsoft
 ```
 
 ## Analysis
